@@ -46,8 +46,7 @@ selenium-nodejs-automation/
 ├── config/
 │   └── config.js              # Configuration settings
 ├── test/
-│   ├── google-search.test.js  # Google search automation tests
-│   └── form-automation.test.js # Form automation tests
+│   └── google-search.test.js  # Google search automation tests
 ├── utils/
 │   └── webdriver-utils.js     # WebDriver utility functions
 ├── screenshots/                # Test screenshots (created automatically)
@@ -86,13 +85,6 @@ The `google-search.test.js` file demonstrates:
 - Performing searches
 - Verifying search results
 - Clicking on search results
-
-### 2. Form Automation
-The `form-automation.test.js` file shows:
-- Filling out web forms
-- Handling multiple input fields
-- Submitting forms
-- Verifying form responses
 
 ## Configuration
 

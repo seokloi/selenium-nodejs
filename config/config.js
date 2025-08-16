@@ -57,12 +57,7 @@ module.exports = {
       'Selenium automation',
       'Node.js testing',
       'WebDriver examples'
-    ],
-    formData: {
-      message: 'Hello from Selenium automation!',
-      number1: '10',
-      number2: '20'
-    }
+    ]
   },
 
   // Screenshot configuration
