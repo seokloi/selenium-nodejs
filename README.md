@@ -12,6 +12,7 @@ A comprehensive automation testing framework using Selenium WebDriver with Node.
 - ⚙️ **Configuration Management** - Environment-specific configurations
 - 🛠️ **Utility Functions** - Reusable WebDriver helper methods
 - 📊 **Test Reporting** - HTML test reports
+- 🤖 **CI/CD Integration** - Automated test runs on GitHub Actions
 
 ## Prerequisites
 
@@ -173,6 +174,24 @@ Run tests with verbose output:
 ```bash
 npx mocha --reporter spec --timeout 30000 test/
 ```
+
+## Continuous Integration (CI/CD)
+
+This project uses **GitHub Actions** for automated testing on every push and pull request.
+
+- The workflow is defined in `.github/workflows/nodejs-ci.yml`.
+- It runs tests on Node.js 18.x and 20.x using the latest Google Chrome in headless mode.
+- All dependencies are installed fresh with `npm ci`.
+- If any test fails, the workflow will fail and report the error in the PR or commit status.
+
+### How it works
+
+1. On every push or pull request to `main` or `master`, the workflow runs.
+2. It checks out the code, installs Node.js, Chrome, and all dependencies.
+3. It runs `npm test` to execute all Mocha tests.
+4. Results are shown in the GitHub Actions tab and on the PR status.
+
+No extra configuration is needed—just push your code and tests will run automatically!
 
 ## Contributing
 
