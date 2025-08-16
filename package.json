@@ -1,0 +1,30 @@
+{
+  "name": "selenium-nodejs-automation",
+  "version": "1.0.0",
+  "description": "Sample automation tests using Selenium with Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --timeout 120000 --reporter spec",
+    "test:headless": "mocha --timeout 120000 --reporter spec --headless",
+    "test:verbose": "mocha --timeout 120000 --reporter spec --verbose",
+    "test:single": "mocha --timeout 120000 --reporter spec",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "selenium",
+    "automation",
+    "testing",
+    "webdriver"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chromedriver": "^139.0.0",
+    "chromedriver-manager": "^0.2.0",
+    "selenium-webdriver": "^4.15.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
+  }
+}
