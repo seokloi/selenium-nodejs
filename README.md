@@ -1,7 +1,3 @@
-Ok, mình sẽ viết sẵn file **README.md** hoàn chỉnh, bạn chỉ cần copy nguyên nội dung dưới đây vào file `README.md` trong project của bạn 👇
-
----
-
 # 🧪 Selenium Automation with Node.js
 
 ## 📌 Giới thiệu
