@@ -33,8 +33,14 @@ describe("Login Page Test", function () {
 
       let currentUrl = await driver.getCurrentUrl();
       expect(currentUrl).to.include("/dashboard");
+      logger.info(
+        "✅ should login successfully with valid credentials successful"
+      );
     } catch (error) {
-      logger.error("❌ Login test failed: " + error.message);
+      logger.error(
+        "❌ should login successfully with valid credentials failed: " +
+          error.message
+      );
       throw error;
     }
   });
@@ -51,9 +57,10 @@ describe("Login Page Test", function () {
           msg.includes("Invalid credentials") ||
           msg.includes("CSRF token validation failed")
       );
+      logger.info("✅ should show error with invalid credentials successful");
     } catch (error) {
       logger.error(
-        "❌ Login test with invalid credentials failed: " + error.message
+        "❌ should show error with invalid credentials failed: " + error.message
       );
       throw error;
     }
