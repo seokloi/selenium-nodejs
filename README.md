@@ -1,204 +1,138 @@
-# Selenium Node.js Automation Testing
+Ok, mình sẽ viết sẵn file **README.md** hoàn chỉnh, bạn chỉ cần copy nguyên nội dung dưới đây vào file `README.md` trong project của bạn 👇
 
-A comprehensive automation testing framework using Selenium WebDriver with Node.js.
+---
 
-## Features
+# 🧪 Selenium Automation with Node.js
 
-- 🚀 **Selenium WebDriver 4** - Latest WebDriver implementation
-- 🧪 **Mocha Test Framework** - Popular testing framework for Node.js
-- ✅ **Chai Assertions** - Expressive assertion library
-- 🌐 **Multi-browser Support** - Chrome, Firefox, and headless modes
-- 📸 **Screenshot Support** - Automatic screenshots on test failures
-- ⚙️ **Configuration Management** - Environment-specific configurations
-- 🛠️ **Utility Functions** - Reusable WebDriver helper methods
-- 📊 **Test Reporting** - HTML test reports
-- 🤖 **CI/CD Integration** - Automated test runs on GitHub Actions
+## 📌 Giới thiệu
 
-## Prerequisites
+Dự án này là bộ **automation test** sử dụng:
 
-- Node.js (version 14 or higher)
-- npm or yarn
-- Chrome browser (for ChromeDriver)
-- Firefox browser (for GeckoDriver - optional)
+- [Selenium WebDriver](https://www.selenium.dev/) (Node.js)
+- [Mocha](https://mochajs.org/) (test runner)
+- [Chai](https://www.chaijs.com/) (assertion library)
 
-## Installation
+Mục tiêu: kiểm thử trang [OrangeHRM Demo](https://opensource-demo.orangehrmlive.com/) với mô hình **Page Object Model (POM)** và cấu trúc dự án chuyên nghiệp.
 
-1. **Clone or download this project**
-   ```bash
-   git clone <repository-url>
-   cd selenium-nodejs-automation
-   ```
+---
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Install ChromeDriver globally (optional but recommended)**
-   ```bash
-   npm install -g chromedriver
-   ```
-
-## Project Structure
+## 📂 Cấu trúc thư mục
 
 ```
-selenium-nodejs-automation/
+selenium-node-test/
+│── package.json
+│── README.md
+│
 ├── config/
-│   └── config.js              # Configuration settings
-├── test/
-│   └── google-search.test.js  # Google search automation tests
+│   └── config.js              # cấu hình chung (URL, timeout, creds…)
+│
 ├── utils/
-│   └── webdriver-utils.js     # WebDriver utility functions
-├── screenshots/                # Test screenshots (created automatically)
-├── reports/                    # Test reports (created automatically)
-├── package.json                # Project dependencies and scripts
-└── README.md                   # This file
+│   ├── driverFactory.js       # tạo WebDriver (Chrome, service, options…)
+│   └── waitHelpers.js         # hàm wait, helper cho element
+│
+├── pages/
+│   ├── BasePage.js            # page base class (click, type, getText…)
+│   └── LoginPage.js           # page object cho login
+│
+└── tests/
+    └── login.test.js          # testcases cho login
 ```
 
-## Running Tests
+---
 
-### Run all tests
+## ⚙️ Cài đặt
+
+1. Clone repo
+
+```bash
+git clone https://github.com/your-repo/selenium-node-test.git
+cd selenium-node-test
+```
+
+2. Cài dependencies
+
+```bash
+npm install
+```
+
+Dependencies chính:
+
+- `selenium-webdriver`
+- `chromedriver`
+- `mocha`
+- `chai`
+
+---
+
+## 🚀 Chạy test
+
+### Chạy toàn bộ test
+
+```bash
+npx mocha tests --timeout 60000
+```
+
+### Chạy 1 file test cụ thể
+
+```bash
+npx mocha tests/login.test.js --timeout 60000
+```
+
+Hoặc thêm script vào `package.json`:
+
+```json
+"scripts": {
+  "test": "mocha tests/**/*.test.js --reporter mochawesome",
+  "test:login": "mocha tests/login/login.test.js --timeout 60000"
+}
+```
+
+Sau đó chạy:
+
 ```bash
 npm test
 ```
 
-### Run tests in headless mode
+hoặc
+
 ```bash
-npm run test:headless
+npm run test:login
 ```
 
-### Run specific test file
-```bash
-npx mocha test/google-search.test.js
+---
+
+## 🏗️ Page Object Model (POM)
+
+Ví dụ `LoginPage.js`:
+
+```js
+const { By } = require("selenium-webdriver");
+const BasePage = require("./BasePage");
+
+class LoginPage extends BasePage {
+  constructor(driver) {
+    super(driver);
+    this.usernameInput = By.name("username");
+    this.passwordInput = By.name("password");
+    this.loginButton = By.css('button[type="submit"]');
+    this.errorMessage = By.css(".oxd-alert-content-text");
+  }
+
+  async open(url) {
+    await this.driver.get(url);
+  }
+
+  async login(username, password) {
+    await this.type(this.usernameInput, username);
+    await this.type(this.passwordInput, password);
+    await this.click(this.loginButton);
+  }
+
+  async getErrorMessage() {
+    const el = await this.find(this.errorMessage);
+    return el.getText();
+  }
+}
+
+module.exports = LoginPage;
 ```
-
-### Run tests with specific browser
-```bash
-BROWSER=firefox npm test
-```
-
-## Test Examples
-
-### 1. Google Search Automation
-The `google-search.test.js` file demonstrates:
-- Navigating to Google
-- Performing searches
-- Verifying search results
-- Clicking on search results
-
-## Configuration
-
-Edit `config/config.js` to customize:
-- Test environments (development, staging, production)
-- Browser settings and options
-- Test data
-- Screenshot and reporting preferences
-
-## Browser Support
-
-### Chrome
-- Default browser for tests
-- Supports headless mode
-- Optimized Chrome options included
-
-### Firefox
-- Alternative browser option
-- GeckoDriver required
-
-### Headless Mode
-- Run tests without opening browser windows
-- Useful for CI/CD pipelines
-
-## Utility Functions
-
-The `WebDriverUtils` class provides common helper methods:
-
-```javascript
-const WebDriverUtils = require('./utils/webdriver-utils');
-const utils = new WebDriverUtils(driver);
-
-// Wait for element
-await utils.waitForElement(By.id('search-box'));
-
-// Type text
-await utils.typeText(By.name('q'), 'search query');
-
-// Click element
-await utils.clickElement(By.css('button[type="submit"]'));
-
-// Take screenshot
-await utils.takeScreenshot('test-result');
-```
-
-## Best Practices
-
-1. **Always use explicit waits** instead of `sleep()` or `implicitWait`
-2. **Use descriptive test names** that explain what is being tested
-3. **Implement proper cleanup** in `after()` hooks
-4. **Use page object model** for complex applications
-5. **Take screenshots** on test failures for debugging
-6. **Handle flaky elements** with appropriate wait strategies
-
-## Troubleshooting
-
-### Common Issues
-
-1. **ChromeDriver version mismatch**
-   - Ensure ChromeDriver version matches your Chrome browser version
-   - Update ChromeDriver: `npm update chromedriver`
-
-2. **Element not found errors**
-   - Check if selectors are correct
-   - Verify elements are visible and not in iframes
-   - Use explicit waits instead of implicit waits
-
-3. **Tests running too fast**
-   - Increase timeout values in configuration
-   - Add appropriate wait conditions
-
-4. **Browser crashes**
-   - Use headless mode for stability
-   - Add browser options like `--no-sandbox`
-
-### Debug Mode
-
-Run tests with verbose output:
-```bash
-npx mocha --reporter spec --timeout 30000 test/
-```
-
-## Continuous Integration (CI/CD)
-
-This project uses **GitHub Actions** for automated testing on every push and pull request.
-
-- The workflow is defined in `.github/workflows/nodejs-ci.yml`.
-- It runs tests on Node.js 18.x and 20.x using the latest Google Chrome in headless mode.
-- All dependencies are installed fresh with `npm ci`.
-- If any test fails, the workflow will fail and report the error in the PR or commit status.
-
-### How it works
-
-1. On every push or pull request to `main` or `master`, the workflow runs.
-2. It checks out the code, installs Node.js, Chrome, and all dependencies.
-3. It runs `npm test` to execute all Mocha tests.
-4. Results are shown in the GitHub Actions tab and on the PR status.
-
-No extra configuration is needed—just push your code and tests will run automatically!
-
-## Contributing
-
-1. Follow the existing code style
-2. Add tests for new features
-3. Update documentation as needed
-4. Use meaningful commit messages
-
-## License
-
-MIT License - see LICENSE file for details
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review Selenium WebDriver documentation
-3. Check Node.js and npm documentation

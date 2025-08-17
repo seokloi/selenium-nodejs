@@ -1,39 +1,34 @@
 const { By } = require("selenium-webdriver");
-const { waitForVisible } = require("../lib/waits");
-const config = require("../config/config");
+const { waitForVisible } = require("../utils/waitHelpers");
 
 class LoginPage {
   constructor(driver) {
     this.driver = driver;
-    this.url = config.baseUrl + config.loginPath;
-    this.locators = {
-      username: By.name("username"),
-      password: By.name("password"),
-      submitBtn: By.css('button[type="submit"]'),
-      errorMsg: By.css(".oxd-alert-content-text"),
-    };
+    this.usernameInput = By.name("username");
+    this.passwordInput = By.name("password");
+    this.loginButton = By.css('button[type="submit"]');
+    this.errorMessage = By.css(".oxd-alert-content-text");
   }
 
-  async open() {
-    await this.driver.manage().deleteAllCookies();
-    await this.driver.get(this.url);
+  async enterUsername(username) {
+    const el = await waitForVisible(this.driver, this.usernameInput);
+    await el.clear();
+    await el.sendKeys(username);
   }
 
-  async login(username, password) {
-    const userInput = await waitForVisible(this.driver, this.locators.username);
-    const passInput = await waitForVisible(this.driver, this.locators.password);
-    const submitBtn = await waitForVisible(
-      this.driver,
-      this.locators.submitBtn
-    );
+  async enterPassword(password) {
+    const el = await waitForVisible(this.driver, this.passwordInput);
+    await el.clear();
+    await el.sendKeys(password);
+  }
 
-    await userInput.sendKeys(username);
-    await passInput.sendKeys(password);
-    await submitBtn.click();
+  async clickLogin() {
+    const btn = await waitForVisible(this.driver, this.loginButton);
+    await btn.click();
   }
 
   async getErrorMessage() {
-    const el = await waitForVisible(this.driver, this.locators.errorMsg);
+    const el = await waitForVisible(this.driver, this.errorMessage, 10000);
     return await el.getText();
   }
 }
