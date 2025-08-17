@@ -20,18 +20,20 @@ selenium-node-test/
 │── README.md
 │
 ├── config/
-│   └── config.js              # cấu hình chung (URL, timeout, creds…)
+│   └── env/
+│       └── dev.js            # cấu hình chung (URL, timeout, creds…)
 │
 ├── utils/
 │   ├── driverFactory.js       # tạo WebDriver (Chrome, service, options…)
+│   ├── logger.js              # logger
 │   └── waitHelpers.js         # hàm wait, helper cho element
 │
 ├── pages/
-│   ├── BasePage.js            # page base class (click, type, getText…)
 │   └── LoginPage.js           # page object cho login
 │
 └── tests/
-    └── login.test.js          # testcases cho login
+    └── login/
+        └── login.test.js      # testcases cho login
 ```
 
 ---
@@ -41,8 +43,8 @@ selenium-node-test/
 1. Clone repo
 
 ```bash
-git clone https://github.com/your-repo/selenium-node-test.git
-cd selenium-node-test
+git clone https://github.com/seokloi/selenium-nodejs.git
+cd selenium-nodejs
 ```
 
 2. Cài dependencies
@@ -65,13 +67,13 @@ Dependencies chính:
 ### Chạy toàn bộ test
 
 ```bash
-npx mocha tests --timeout 60000
+npx mocha tests/**/*.test.js --timeout 60000
 ```
 
 ### Chạy 1 file test cụ thể
 
 ```bash
-npx mocha tests/login.test.js --timeout 60000
+npx mocha tests/login/login.test.js --timeout 60000
 ```
 
 Hoặc thêm script vào `package.json`:
@@ -103,30 +105,37 @@ Ví dụ `LoginPage.js`:
 
 ```js
 const { By } = require("selenium-webdriver");
-const BasePage = require("./BasePage");
+const { waitForVisible } = require("../utils/waitHelpers");
 
-class LoginPage extends BasePage {
+class LoginPage {
   constructor(driver) {
-    super(driver);
+    this.driver = driver;
     this.usernameInput = By.name("username");
     this.passwordInput = By.name("password");
     this.loginButton = By.css('button[type="submit"]');
     this.errorMessage = By.css(".oxd-alert-content-text");
   }
 
-  async open(url) {
-    await this.driver.get(url);
+  async enterUsername(username) {
+    const el = await waitForVisible(this.driver, this.usernameInput);
+    await el.clear();
+    await el.sendKeys(username);
   }
 
-  async login(username, password) {
-    await this.type(this.usernameInput, username);
-    await this.type(this.passwordInput, password);
-    await this.click(this.loginButton);
+  async enterPassword(password) {
+    const el = await waitForVisible(this.driver, this.passwordInput);
+    await el.clear();
+    await el.sendKeys(password);
+  }
+
+  async clickLogin() {
+    const btn = await waitForVisible(this.driver, this.loginButton);
+    await btn.click();
   }
 
   async getErrorMessage() {
-    const el = await this.find(this.errorMessage);
-    return el.getText();
+    const el = await waitForVisible(this.driver, this.errorMessage, 10000);
+    return await el.getText();
   }
 }
 
