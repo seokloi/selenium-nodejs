@@ -1,35 +1,34 @@
-const { By } = require("selenium-webdriver");
-const { waitForVisible } = require("../utils/waitHelpers");
+const { By, until } = require("selenium-webdriver");
+const BasePage = require("./BasePage");
+const config = require("../config/env/dev");
 
-class LoginPage {
+class LoginPage extends BasePage {
   constructor(driver) {
-    this.driver = driver;
+    super(driver);
     this.usernameInput = By.name("username");
     this.passwordInput = By.name("password");
-    this.loginButton = By.css('button[type="submit"]');
+    this.submitButton = By.css('button[type="submit"]');
     this.errorMessage = By.css(".oxd-alert-content-text");
   }
 
-  async enterUsername(username) {
-    const el = await waitForVisible(this.driver, this.usernameInput);
-    await el.clear();
-    await el.sendKeys(username);
+  async openLogin() {
+    await this.open(config.baseUrl + "/web/index.php/auth/login");
   }
 
-  async enterPassword(password) {
-    const el = await waitForVisible(this.driver, this.passwordInput);
-    await el.clear();
-    await el.sendKeys(password);
-  }
-
-  async clickLogin() {
-    const btn = await waitForVisible(this.driver, this.loginButton);
-    await btn.click();
+  async login(username, password) {
+    await this.type(this.usernameInput, username);
+    await this.type(this.passwordInput, password);
+    await this.click(this.submitButton);
   }
 
   async getErrorMessage() {
-    const el = await waitForVisible(this.driver, this.errorMessage, 10000);
-    return await el.getText();
+    await this.waitUntilLocated(this.errorMessage);
+    return await this.getText(this.errorMessage);
+  }
+
+  async waitForDashboard() {
+    await this.driver.wait(until.urlContains("/dashboard"), 5000);
+    return await this.driver.getCurrentUrl();
   }
 }
 

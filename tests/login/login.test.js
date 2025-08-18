@@ -18,7 +18,7 @@ describe("Login Data-Driven Test", function () {
 
   beforeEach(async () => {
     await driver.manage().deleteAllCookies();
-    await driver.get(config.baseUrl + "/web/index.php/auth/login");
+    await loginPage.openLogin();
   });
 
   after(async () => {
@@ -32,14 +32,11 @@ describe("Login Data-Driven Test", function () {
   testData.forEach(({ username, password, expected }) => {
     it(`should login with ${username}/${password} → expect ${expected}`, async () => {
       try {
-        await loginPage.enterUsername(username);
-        await loginPage.enterPassword(password);
-        await loginPage.clickLogin();
+        await loginPage.login(username, password);
 
         if (expected === "success") {
-          await driver.wait(until.urlContains("/dashboard"), 5000);
-          const currentUrl = await driver.getCurrentUrl();
-          expect(currentUrl).to.include("/dashboard");
+          const url = await loginPage.waitForDashboard();
+          expect(url).to.include("/dashboard");
         } else {
           const errorMsg = await loginPage.getErrorMessage();
           expect(errorMsg).to.satisfy(
