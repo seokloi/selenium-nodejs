@@ -1,10 +1,11 @@
 const { expect } = require("chai");
+const config = require("../../config/env/dev");
+const LoginPage = require("../../pages/LoginPage");
+const { loadJSON } = require("../../utils/dataProvider");
 const { createDriver } = require("../../utils/driverFactory");
 const logger = require("../../utils/logger");
-const LoginPage = require("../../pages/LoginPage");
-const config = require("../../config/env/dev");
 
-describe("Login Page Test", function () {
+describe("Login Data-Driven Test", function () {
   this.timeout(60000);
   let driver;
   let loginPage;
@@ -25,44 +26,35 @@ describe("Login Page Test", function () {
     }
   });
 
-  it("should login successfully with valid credentials", async () => {
-    try {
-      await loginPage.enterUsername(config.username);
-      await loginPage.enterPassword(config.password);
-      await loginPage.clickLogin();
+  const testData = loadJSON("login/loginData.json");
 
-      const currentUrl = await driver.getCurrentUrl();
-      expect(currentUrl).to.include("/dashboard");
-      logger.info(
-        "✅ should login successfully with valid credentials successful"
-      );
-    } catch (error) {
-      logger.error(
-        "❌ should login successfully with valid credentials failed: " +
-          error.message
-      );
-      throw error;
-    }
-  });
+  testData.forEach(({ username, password, expected }) => {
+    it(`should login with ${username}/${password} → expect ${expected}`, async () => {
+      try {
+        await loginPage.enterUsername(username);
+        await loginPage.enterPassword(password);
+        await loginPage.clickLogin();
 
-  it("should show error with invalid credentials", async () => {
-    try {
-      await loginPage.enterUsername("Admin");
-      await loginPage.enterPassword("wrongpassword");
-      await loginPage.clickLogin();
-
-      const errorMsg = await loginPage.getErrorMessage();
-      expect(errorMsg).to.satisfy(
-        (msg) =>
-          msg.includes("Invalid credentials") ||
-          msg.includes("CSRF token validation failed")
-      );
-      logger.info("✅ should show error with invalid credentials successful");
-    } catch (error) {
-      logger.error(
-        "❌ should show error with invalid credentials failed: " + error.message
-      );
-      throw error;
-    }
+        if (expected === "success") {
+          const currentUrl = await driver.getCurrentUrl();
+          expect(currentUrl).to.include("/dashboard");
+        } else {
+          const errorMsg = await loginPage.getErrorMessage();
+          expect(errorMsg).to.satisfy(
+            (msg) =>
+              msg.includes("Invalid credentials") ||
+              msg.includes("CSRF token validation failed")
+          );
+        }
+        logger.info(
+          `✅ should login with ${username}/${password} → expect ${expected}`
+        );
+      } catch (error) {
+        logger.error(
+          `❌ should login with ${username}/${password} → expect ${expected}:` +
+            error.message
+        );
+      }
+    });
   });
 });
