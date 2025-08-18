@@ -1,3 +1,4 @@
+const { until } = require("selenium-webdriver");
 const { expect } = require("chai");
 const config = require("../../config/env/dev");
 const LoginPage = require("../../pages/LoginPage");
@@ -36,6 +37,7 @@ describe("Login Data-Driven Test", function () {
         await loginPage.clickLogin();
 
         if (expected === "success") {
+          await driver.wait(until.urlContains("/dashboard"), 5000);
           const currentUrl = await driver.getCurrentUrl();
           expect(currentUrl).to.include("/dashboard");
         } else {
@@ -51,7 +53,7 @@ describe("Login Data-Driven Test", function () {
         );
       } catch (error) {
         logger.error(
-          `❌ should login with ${username}/${password} → expect ${expected}:` +
+          `❌ should login with ${username}/${password} → expect ${expected}: ` +
             error.message
         );
       }
