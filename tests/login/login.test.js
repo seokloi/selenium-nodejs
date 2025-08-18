@@ -31,7 +31,7 @@ describe("Login Page Test", function () {
       await loginPage.enterPassword(config.password);
       await loginPage.clickLogin();
 
-      let currentUrl = await driver.getCurrentUrl();
+      const currentUrl = await driver.getCurrentUrl();
       expect(currentUrl).to.include("/dashboard");
       logger.info(
         "✅ should login successfully with valid credentials successful"
@@ -51,8 +51,8 @@ describe("Login Page Test", function () {
       await loginPage.enterPassword("wrongpassword");
       await loginPage.clickLogin();
 
-      const errorText = await loginPage.getErrorMessage();
-      expect(errorText).to.satisfy(
+      const errorMsg = await loginPage.getErrorMessage();
+      expect(errorMsg).to.satisfy(
         (msg) =>
           msg.includes("Invalid credentials") ||
           msg.includes("CSRF token validation failed")
